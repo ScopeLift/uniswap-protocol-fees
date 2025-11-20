@@ -11,19 +11,29 @@ import {IReleaser} from "../../src/interfaces/IReleaser.sol";
 import {IV3FeeAdapter} from "../../src/interfaces/IV3FeeAdapter.sol";
 import {IOwned} from "../../src/interfaces/base/IOwned.sol";
 import {IUniswapV3Factory} from "v3-core/contracts/interfaces/IUniswapV3Factory.sol";
+import {IAgreementAnchorFactory} from "../../src/interfaces/external/IAgreementAnchorFactory.sol";
 
 contract MainnetDeployer {
   ITokenJar public immutable TOKEN_JAR;
   IReleaser public immutable RELEASER;
   IV3FeeAdapter public immutable V3_FEE_ADAPTER;
   IUNIVesting public immutable UNI_VESTING;
+  address public immutable AGREEMENT_ANCHOR_0;
+  address public immutable AGREEMENT_ANCHOR_1;
 
   address public constant RESOURCE = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984;
   uint256 public constant THRESHOLD = 10_000e18;
   IUniswapV3Factory public constant V3_FACTORY =
     IUniswapV3Factory(0x1F98431c8aD98523631AE4a59f267346ea31F984);
+  IAgreementAnchorFactory public constant AGREEMENT_ANCHOR_FACTORY =
+    IAgreementAnchorFactory(0x5Ef3cCf9eC7E0af61E1767b2EEbB50e052b5Df47);
   // TODO: set with the real UNI recipient when ready
   address public constant LABS_UNI_RECIPIENT = 0x0000000000000000000000000000000000000001;
+  // TODO: set content hashes and counterparty addresses for DUNI agreements
+  bytes32 public constant AGREEMENT_ANCHOR_0_CONTENT_HASH = "";
+  address public constant AGREEMENT_ANCHOR_0_COUNTER_SIGNER = address(0);
+  bytes32 public constant AGREEMENT_ANCHOR_1_CONTENT_HASH = "";
+  address public constant AGREEMENT_ANCHOR_1_COUNTER_SIGNER = address(0);
 
   // Using the real merkle root from the generated merkle tree in ./merkle-generator
   // TODO: Regenerate the merkle tree
@@ -65,6 +75,10 @@ contract MainnetDeployer {
   /// UNI_VESTING
   /// 14. Deploy the UNIVesting contract.
   /// 15. Update the owner on the UNIVesting contract.
+
+  /// ATTESTATIONS:
+  /// 16. Deploy the first AgreementAnchor.
+  /// 17. Deploy the second AgreementAnchor.
   constructor() {
     address owner = V3_FACTORY.owner();
     /// 1. Deploy the TokenJar.
@@ -115,5 +129,16 @@ contract MainnetDeployer {
 
     /// 15. Update the owner on the UNIVesting contract.
     IOwned(address(UNI_VESTING)).transferOwnership(owner);
+
+    /// 16. Deploy the first AgreementAnchor.
+    AGREEMENT_ANCHOR_0 = AGREEMENT_ANCHOR_FACTORY.createAgreementAnchor(
+      AGREEMENT_ANCHOR_0_CONTENT_HASH,
+      AGREEMENT_ANCHOR_0_COUNTER_SIGNER
+    );
+    /// 17. Deploy the second AgreementAnchor.
+    AGREEMENT_ANCHOR_1 = AGREEMENT_ANCHOR_FACTORY.createAgreementAnchor(
+      AGREEMENT_ANCHOR_1_CONTENT_HASH,
+      AGREEMENT_ANCHOR_1_COUNTER_SIGNER
+    );
   }
 }

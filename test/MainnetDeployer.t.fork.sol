@@ -11,6 +11,8 @@ import {ITokenJar} from "../src/interfaces/ITokenJar.sol";
 import {IReleaser} from "../src/interfaces/IReleaser.sol";
 import {IOwned} from "../src/interfaces/base/IOwned.sol";
 import {IV3FeeAdapter} from "../src/interfaces/IV3FeeAdapter.sol";
+import {IAgreementAnchor} from "test/interfaces/IAgreementAnchor.sol";
+
 
 contract DeployerTest is Test {
   MainnetDeployer public deployer;
@@ -24,9 +26,10 @@ contract DeployerTest is Test {
   address public owner;
 
   function setUp() public {
+    vm.createSelectFork("mainnet");
     factory = IUniswapV3Factory(0x1F98431c8aD98523631AE4a59f267346ea31F984);
-    IUniswapV3Factory _factory = UniswapV3FactoryDeployer.deploy();
-    vm.etch(address(factory), address(_factory).code);
+    // IUniswapV3Factory _factory = UniswapV3FactoryDeployer.deploy();
+    // vm.etch(address(factory), address(_factory).code);
 
     owner = makeAddr("owner");
     vm.prank(factory.owner());
@@ -66,5 +69,12 @@ contract DeployerTest is Test {
     assertEq(feeAdapter.feeSetter(), factory.owner());
     assertEq(address(feeAdapter.TOKEN_JAR()), address(tokenJar));
     assertEq(address(feeAdapter.FACTORY()), address(factory));
+  }
+
+  function test_deployer_agreementAnchor_setUp() public {
+    assertEq(IAgreementAnchor(deployer.AGREEMENT_ANCHOR_0()).PARTY_B(), deployer.AGREEMENT_ANCHOR_0_COUNTER_SIGNER());
+    assertEq(IAgreementAnchor(deployer.AGREEMENT_ANCHOR_0()).CONTENT_HASH(), deployer.AGREEMENT_ANCHOR_0_CONTENT_HASH());
+    assertEq(IAgreementAnchor(deployer.AGREEMENT_ANCHOR_1()).PARTY_B(), deployer.AGREEMENT_ANCHOR_1_COUNTER_SIGNER());
+    assertEq(IAgreementAnchor(deployer.AGREEMENT_ANCHOR_1()).CONTENT_HASH(), deployer.AGREEMENT_ANCHOR_1_CONTENT_HASH());
   }
 }

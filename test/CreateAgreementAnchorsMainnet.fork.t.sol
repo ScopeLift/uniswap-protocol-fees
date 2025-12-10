@@ -27,13 +27,13 @@ contract CreateAgreementAnchorsMainnetForkTest is Test {
       IAgreementAnchor(agreementAnchor2).CONTENT_HASH(), script.AGREEMENT_ANCHOR_2_CONTENT_HASH()
     );
     assertEq(
+      IAgreementAnchor(agreementAnchor3).CONTENT_HASH(), script.AGREEMENT_ANCHOR_3_CONTENT_HASH()
+    );
+    assertEq(
       IAgreementAnchor(agreementAnchor1).PARTY_B(), script.AGREEMENT_ANCHOR_1_COUNTER_SIGNER()
     );
     assertEq(
       IAgreementAnchor(agreementAnchor2).PARTY_B(), script.AGREEMENT_ANCHOR_2_COUNTER_SIGNER()
-    );
-    assertEq(
-      IAgreementAnchor(agreementAnchor3).CONTENT_HASH(), script.AGREEMENT_ANCHOR_3_CONTENT_HASH()
     );
     assertEq(
       IAgreementAnchor(agreementAnchor3).PARTY_B(), script.AGREEMENT_ANCHOR_3_COUNTER_SIGNER()
